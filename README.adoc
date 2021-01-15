@@ -7,6 +7,9 @@ It will expose the network via the Homie protocol, again on MQTT.
 This provides bidirectional access, and auto detection via the Homie protocol for automation servers that support Homie, but do
 not support MySensors via the MQTT gateway.
 
+MySensors - https://www.mysensors.org/
+Homie - https://homieiot.github.io/
+
 ## Quick Start
 
 Download this repo.
