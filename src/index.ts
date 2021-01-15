@@ -1,5 +1,5 @@
 
-import fs from "fs"
+import * as fs from "fs"
 import { connect } from "mqtt"
 import {registerNewNode} from "./commands";
 import {COMMAND, MSCommand} from "./types";
