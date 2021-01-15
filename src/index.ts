@@ -1,4 +1,5 @@
 
+import fs from "fs"
 import { connect } from "mqtt"
 import {registerNewNode} from "./commands";
 import {COMMAND, MSCommand} from "./types";
@@ -9,7 +10,9 @@ import {handleInternal, INTERNAL_TYPE} from "./ms_messaging/internal";
 import {handleReq, handleSet, SET_REQ_TYPE} from "./ms_messaging/set_req";
 import {handleStream} from "./ms_messaging/stream";
 
-export const client  = connect('mqtt://192.168.68.133')
+let config = JSON.parse(fs.readFileSync("config.json").toString())
+
+export const client  = connect(config.brokerUrl)
 
 loadMsNodes()
 

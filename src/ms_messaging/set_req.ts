@@ -68,7 +68,6 @@ export const SET_REQ_TYPE = {
 export async function handleSet(data: MSCommand, node: MSNode) {
     const homie = getHomie(data.nodeId)
 
-    homie.nodes
 }
 
 export async function handleReq(data: MSCommand, node: MSNode) {

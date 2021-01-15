@@ -47,7 +47,7 @@ function createHomie(mqtt: MqttClient, node: MSNode): HomieReg {
         if (sense.type === "S_BINARY") {
             myNode.advertise(sense.type + "_" + sense.id).setName('on/off').setDatatype('boolean').settable(function (range: any, value: any) {
                 console.log(`NODE ${node.nodeId}: Switching ${sense.id} on/ off ` + value)
-                myNode.setProperty(sense.type + "_" + sense.id).setRetained().send(value);
+                myNode.setProperty(sense.type + "_" + sense.id).setRetained(true).send(value);
 
                 return sendCommand({
                     nodeId: node.nodeId,
