@@ -1,10 +1,10 @@
 # MYSensors/ Homie Bridge
 
-This project will take an existing MQQT based MySensors network and act as its controller.
+This project will take an existing MQTT based MySensors network and act as its controller.
 
-It will expose the network via the Homie protocol, again on MQTT.
+It will expose the network via the Homie convention, again on MQTT.
 
-This provides bidirectional access, and auto detection via the Homie protocol for automation servers that support Homie, but do
+This provides bidirectional access, and auto detection via the Homie convention for automation servers that support Homie, but do
 not support MySensors via the MQTT gateway.
 
 MySensors - https://www.mysensors.org/
@@ -24,7 +24,7 @@ a matching Homie network will be created by the adatper.
 > yarn start
 ```
 
-Then, (re) start your MySensors nodes to have them detected and republished using the Homie protocol
+Then, (re) start your MySensors nodes to have them detected and republished using the Homie convention
 
 You will need an automation server of some sort that understand Homie.
 
