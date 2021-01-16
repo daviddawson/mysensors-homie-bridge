@@ -45,6 +45,9 @@ export function loadMsNodes() {
     if (fs.existsSync("mysensor-homie.json")) {
         devices = JSON.parse(fs.readFileSync("mysensor-homie.json").toString())
         devices.forEach(value => deviceIds[value.nodeId] = value.nodeId)
+        devices.forEach(value => value.sensors.forEach(sense => {
+            if (!sense.meta) sense.meta = {}
+        }))
     }
 }
 
