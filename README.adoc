@@ -1,4 +1,4 @@
-# MYSensors/ Homie Bridge
+# MySensors/ Homie Bridge
 
 This project will take an existing MQTT based MySensors network and act as its controller.
 

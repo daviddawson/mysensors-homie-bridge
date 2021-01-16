@@ -6,6 +6,9 @@ export interface Sensor {
     id: string
     type: PresentationType
     handler?: (cmd: MSCommand) => Promise<void>
+    meta?: {
+        [key: string]: string
+    }
 }
 
 export interface MSNode {
@@ -49,9 +52,11 @@ export async function upsertSensor(node: MSNode, sensorId: string, exec: (sensor
     let existingSensor = node.sensors.find(value => value.id === sensorId)
     if (!existingSensor) {
         existingSensor = {
-            id: sensorId, type: null
+            id: sensorId, type: null, meta: {}
         }
         node.sensors.push(existingSensor)
+    } else if (!existingSensor.meta) {
+        existingSensor.meta = {}
     }
 
     await exec(existingSensor)
