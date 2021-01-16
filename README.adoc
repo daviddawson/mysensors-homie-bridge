@@ -28,7 +28,9 @@ Then, (re) start your MySensors nodes to have them detected and republished usin
 
 You will need an automation server of some sort that understand Homie.
 
-I have used this successfully with OpenHab 3 and the MQTT Plugin
+I have used this successfully with OpenHab 3 and the MQTT Binding, which has Homie support built in.
+
+An example S_BINARY/ relay control arduino sketch that runs with a RF-NANO/ RF24 based MySensor setup is in the examples folder.
 
 ## State File
 
@@ -61,13 +63,40 @@ See `mysensors-homie.json`
 ]
 ```
 
-## ASdding support for a new MySensors Type
+## Adding support for a new MySensors Type
 
 As below, not all MySensors types are fully supported.
 
 The full list of MySensors types is at https://www.mysensors.org/download/serial_api_20
 
-Add by TODO - info here.
+Create a new handler in `src/type-handler/[name_of_type].ts` (for example `s_binary.ts`)
+
+```
+export function setupSBinary(homieNode: HomieNode, node: MSNode, sensor: Sensor) {
+
+    sensor.handler = async cmd => {     <1>
+        homieNode.setProperty(sensor.type + "_" + sensor.id).setRetained(true).send(cmd.payload == "1" ? "true" : "false");
+    }
+
+    <2>
+    homieNode.advertise(sensor.type + "_" + sensor.id).setName('on/off').setDatatype('boolean').settable(function (range: any, value: any) {
+        console.log(`[homie] NODE ${node.nodeId}: Switching ${sensor.id} on/ off ` + value)
+
+        return sendMySensorsCommand({   <3>
+            nodeId: node.nodeId,
+            childSensorId: sensor.id,
+            command: "SET",
+            ack: "0",
+            type: "V_STATUS",
+            payload: value == "true" ? "1" : "0"
+        }, client)
+    });
+}
+
+```
+<1> Register a handler against the sensor.  All MySensors commands that are received for this sensor will be passed to this handler.
+<2> Advertise the sensor on the Homie network against the auto created Homie Node. This is the API - https://github.com/microclimates/homie-device
+<3> When a `settable` Homie property is set, you will receive messages for it. These can be translated to MySensors commands here.
 
 ## Supported features
 
@@ -85,7 +114,7 @@ https://www.mysensors.org/download/serial_api_20
 |ID| TYPE| SUPPORTED
 |0|PRESENT|✅
 |1|SET| ✅
-|2|REQ|  ❌
+|2|REQ|  ✅
 |3|INTERNAL|✅
 |4|STREAM|❌
 |===
@@ -140,7 +169,7 @@ https://www.mysensors.org/download/serial_api_20
 |ID| TYPE| From Sensor | To Sensor
 |0|V_TEMP|❌|❌
 |1|V_HUM|❌|❌
-|2|V_STATUS|❌|❌
+|2|V_STATUS|✅|✅
 |3|V_PERCENTAGE|❌|❌
 |4|V_PRESSURE|❌|❌
 |5|V_FORECAST|❌|❌

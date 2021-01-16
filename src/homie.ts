@@ -1,8 +1,9 @@
-import { MqttClient } from "mqtt"
+import {MqttClient} from "mqtt"
 import {MSNode} from "./registration";
-import {sendCommand} from "./commands";
+import {sendMySensorsCommand} from "./commands";
 import {client} from "./index";
 import HomieDevice from "./homie-device/homieDevice";
+import {setupSBinary} from "./type-handler/s_binary";
 
 interface HomieReg {
     msId: string
@@ -41,25 +42,15 @@ function createHomie(mqtt: MqttClient, node: MSNode): HomieReg {
 
     var myDevice = new HomieDevice(mqtt, config);
 
-    const myNode = myDevice.node("devices", 'MY Sensors Items', 'testnode');
+    const myNode = myDevice.node("devices", 'MySensors Items', 'testnode');
 
     for (let sense of node.sensors) {
-        if (sense.type === "S_BINARY") {
-            myNode.advertise(sense.type + "_" + sense.id).setName('on/off').setDatatype('boolean').settable(function (range: any, value: any) {
-                console.log(`NODE ${node.nodeId}: Switching ${sense.id} on/ off ` + value)
-                myNode.setProperty(sense.type + "_" + sense.id).setRetained(true).send(value);
-
-                return sendCommand({
-                    nodeId: node.nodeId,
-                    childSensorId: sense.id,
-                    command: "1",
-                    ack: "0",
-                    type: "2", // V_STATUS
-                    payload: value == "true" ? "1" : "0"
-                }, client)
-            });
-        } else {
-            console.log("Unsupported MYSensors type will be ignored by Homie bridge: " + sense.type)
+        switch (sense.type) {
+            case "S_BINARY":
+                setupSBinary(myNode, node, sense)
+                break;
+            default:
+                console.log("Unsupported MYSensors type will be ignored by Homie bridge: " + sense.type)
         }
     }
 

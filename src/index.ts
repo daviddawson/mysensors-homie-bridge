@@ -2,13 +2,13 @@
 import * as fs from "fs"
 import { connect } from "mqtt"
 import {registerNewNode} from "./commands";
-import {COMMAND, MSCommand} from "./types";
+import {decorateCommandType, MSCommand, MSRawCommand} from "./types";
 import {getNodes, loadMsNodes, upsert, upsertSensor} from "./registration";
 import {publishMSNodesToHomie} from "./homie";
-import {handlePresentation, PRESENT_TYPE} from "./ms_messaging/presentation";
-import {handleInternal, INTERNAL_TYPE} from "./ms_messaging/internal";
-import {handleReq, handleSet, SET_REQ_TYPE} from "./ms_messaging/set_req";
-import {handleStream} from "./ms_messaging/stream";
+import {decoratePresentType, handlePresentation} from "./ms-messaging/presentation";
+import {decorateInternalType, handleInternal} from "./ms-messaging/internal";
+import {decorateSetReqType, handleReq, handleSet} from "./ms-messaging/set_req";
+import {handleStream} from "./ms-messaging/stream";
 
 let config = JSON.parse(fs.readFileSync("config.json").toString())
 
@@ -23,40 +23,27 @@ client.on('connect', function () {
     })
 })
 
-function getType(command: any, type: any) {
-    switch(command) {
-        case "PRESENT":
-            return PRESENT_TYPE[type]
-        case "SET":
-        case "REQ":
-            return SET_REQ_TYPE[type]
-        case "INTERNAL":
-            return INTERNAL_TYPE[type]
-        default:
-            return type
-    }
-}
-
-
-
 client.on('message', function (topic, message) {
 
     let parts = topic.split("/") as any
 
     if (parts[0] === "mysensors-out") {
-        // message is Buffer
-        console.log(`${topic} :: ${message.toString()}`)
+        console.log(`[mysensors] ${topic} :: ${message.toString()}`)
 
-        let data: MSCommand = {
+        let data: MSRawCommand = {
             nodeId: parts[1],
             childSensorId: parts[2],
-            command: COMMAND[parts[3]],
+            command: null,
             commandRaw: parts[3],
             ack: parts[4],
-            type: getType(COMMAND[parts[3]], parts[5]),
+            type: null,
             typeRaw: parts[5],
             payload: message.toString()
         }
+        decorateCommandType(data)
+        decoratePresentType(data)
+        decorateInternalType(data)
+        decorateSetReqType(data)
 
         console.log(data)
         switch(data.command) {

@@ -2,9 +2,44 @@ import {registerNewNode} from "../commands";
 import {getNodes, upsert} from "../registration";
 import {publishMSNodesToHomie} from "../homie";
 import {client} from "../index";
-import {MSCommand} from "../types";
+import {MSCommand, MSRawCommand} from "../types";
 
-export const INTERNAL_TYPE = {
+export type InternalType =  "I_BATTERY_LEVEL"|
+    "I_TIME"|
+    "I_VERSION"|
+    "I_ID_REQUEST"|
+    "I_ID_RESPONSE"|
+    "I_INCLUSION_MODE"|
+    "I_CONFIG"|
+    "I_FIND_PARENT"|
+    "I_FIND_PARENT_RESPONSE"|
+    "I_LOG_MESSAGE"|
+    "I_CHILDREN"|
+    "I_SKETCH_NAME"|
+    "I_SKETCH_VERSION"|
+    "I_REBOOT"|
+    "I_GATEWAY_READY"|
+    "I_SIGNING_PRESENTATION"|
+    "I_NONCE_REQUEST"|
+    "I_NONCE_RESPONSE"|
+    "I_HEARTBEAT_REQUEST"|
+    "I_PRESENTATION"|
+    "I_DISCOVER_REQUEST"|
+    "I_DISCOVER_RESPONSE"|
+    "I_HEARTBEAT_RESPONSE"|
+    "I_LOCKED"|
+    "I_PING"|
+    "I_PONG"|
+    "I_REGISTRATION_REQUEST"|
+    "I_REGISTRATION_RESPONSE"|
+    "I_DEBUG"|
+    "I_SIGNAL_REPORT_REQUEST"|
+    "I_SIGNAL_REPORT_REVERSE"|
+    "I_SIGNAL_REPORT_RESPONSE"|
+    "I_PRE_SLEEP_NOTIFICATION"|
+    "I_POST_SLEEP_NOTIFICATION"
+
+const INTERNAL_TYPE = {
     0:	"I_BATTERY_LEVEL",
     1:	"I_TIME",
     2:	"I_VERSION",
@@ -40,8 +75,21 @@ export const INTERNAL_TYPE = {
     32:	"I_PRE_SLEEP_NOTIFICATION",
     33:	"I_POST_SLEEP_NOTIFICATION"
 } as {
-    [key: number] : string
+    [key: string] : InternalType
 }
+
+export function decorateInternalType(ms: MSRawCommand) {
+    if (ms.command === "INTERNAL") {
+        ms.type = INTERNAL_TYPE[ms.typeRaw]
+    }
+}
+
+export function decorateRawInternalType(ms: MSRawCommand) {
+    if (ms.command === "INTERNAL") {
+        ms.typeRaw = Object.keys(INTERNAL_TYPE).find(value => INTERNAL_TYPE[value] === ms.type)
+    }
+}
+
 
 export async function handleInternal(data: MSCommand) {
     switch (data.type) {

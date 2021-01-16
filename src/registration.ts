@@ -1,8 +1,11 @@
 import * as fs from "fs"
+import {PresentationType} from "./ms-messaging/presentation";
+import {MSCommand} from "./types";
 
 export interface Sensor {
     id: string
-    type: string
+    type: PresentationType
+    handler?: (cmd: MSCommand) => Promise<void>
 }
 
 export interface MSNode {
@@ -46,7 +49,7 @@ export async function upsertSensor(node: MSNode, sensorId: string, exec: (sensor
     let existingSensor = node.sensors.find(value => value.id === sensorId)
     if (!existingSensor) {
         existingSensor = {
-            id: sensorId, type: ""
+            id: sensorId, type: null
         }
         node.sensors.push(existingSensor)
     }
