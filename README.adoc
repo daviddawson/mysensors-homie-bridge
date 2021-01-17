@@ -128,8 +128,8 @@ https://www.mysensors.org/download/serial_api_20
 |3|S_BINARY| ✅
 |4|S_DIMMER| ❌
 |5|S_COVER| ❌
-|6|S_TEMP| ❌
-|7|S_HUM| ❌
+|6|S_TEMP| ✅
+|7|S_HUM| ✅
 |8|S_BARO| ❌
 |9|S_WIND| ❌
 |10|S_RAIN| ❌
@@ -167,8 +167,8 @@ https://www.mysensors.org/download/serial_api_20
 .Set/ Req Types
 |===
 |ID| TYPE| From Sensor | To Sensor
-|0|V_TEMP|❌|❌
-|1|V_HUM|❌|❌
+|0|V_TEMP|✅|➖
+|1|V_HUM|✅|➖
 |2|V_STATUS|✅|✅
 |3|V_PERCENTAGE|❌|❌
 |4|V_PRESSURE|❌|❌

@@ -104,7 +104,11 @@ export async function handlePresentation(data: MSCommand, node: MSNode) {
         case "S_ARDUINO_REPEATER_NODE":
             node.repeater = true
             break;
-        case "S_BINARY":
+        case "S_CUSTOM":
+        case "S_ARDUINO_NODE":
+            console.log("Unhandled MySensor presentation " + data.type)
+            break;
+        default:
             await upsertSensor(node, data.childSensorId, async sensor => {
                 sensor.type = data.type as PresentationType
             })

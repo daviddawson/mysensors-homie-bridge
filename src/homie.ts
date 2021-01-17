@@ -4,6 +4,8 @@ import {sendMySensorsCommand} from "./commands";
 import {client} from "./index";
 import HomieDevice from "./homie-device/homieDevice";
 import {setupSBinary} from "./type-handler/s_binary";
+import {setupSTemp} from "./type-handler/s_temp";
+import {setupSHum} from "./type-handler/s_hum";
 
 interface HomieReg {
     msId: string
@@ -49,8 +51,14 @@ function createHomie(mqtt: MqttClient, node: MSNode): HomieReg {
             case "S_BINARY":
                 setupSBinary(myNode, node, sense)
                 break;
+            case "S_TEMP":
+                setupSTemp(myNode, node, sense)
+                break;
+            case "S_HUM":
+                setupSHum(myNode, node, sense)
+                break;
             default:
-                console.log("Unsupported MYSensors type will be ignored by Homie bridge: " + sense.type)
+                console.log("Unsupported MySensors type will be ignored by Homie bridge: " + sense.type)
         }
     }
 
